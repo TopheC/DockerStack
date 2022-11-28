@@ -1,0 +1,27 @@
+version: '2.3'
+
+services:
+  iperf3server:
+    container_name: iperf
+    image: networkstatic/iperf3
+    command: "-V -s -p 5002"
+#    port:
+#      -"5002/tcp"
+#      -"5002/udp"    
+    restart: always
+    networks:
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.udp.routers.router-udp5001.entrypoints=udp5001"
+      - "traefik.udp.services.iperfserver.loadbalancer.server.port=5002"
+      - "traefik.tcp.routers.router-tcp5001.entryPoints=tcp5001"
+      - "traefik.tcp.routers.router-tcp5001.rule=HostSNI(`*`)"
+      - "traefik.tcp.services.iperfserver-tcp.loadBalancer.server.port=5002"
+
+networks:
+  traefik-proxy:
+    external: true
+
+

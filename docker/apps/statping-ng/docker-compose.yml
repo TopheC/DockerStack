@@ -1,0 +1,26 @@
+version: '2.3'
+
+services:
+  statping:
+    container_name: statping
+    image: adamboutcher/statping-ng:latest
+    restart: always
+    volumes:
+      - statping_data:/app
+    environment:
+      DB_CONN: sqlite
+    networks:
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.http.routers.statping-ng-secure.rule=Host(`statping.poc.ccado.fr`)"
+      - "traefik.http.routers.statping-ng-secure.entrypoints=websecure"
+      - "traefik.http.services.statping-ng.loadbalancer.server.port=8080"
+
+volumes:
+  statping_data:
+
+networks:
+  traefik-proxy:
+    external: true
